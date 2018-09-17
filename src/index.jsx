@@ -13,16 +13,20 @@ import './index.less';
 
 const headerCache = new LocalStorage('docs_proxy_header');
 
-const Columns = [{
-  header: 'Name',
-  component: Name
-}, {
-  header: 'Type',
-  component: Type
-}, {
-  header: 'Default',
-  component: Default
-}];
+const Columns = [
+  {
+    header: 'Name',
+    component: Name
+  },
+  {
+    header: 'Type',
+    component: Type
+  },
+  {
+    header: 'Default',
+    component: Default
+  }
+];
 const DefaultDocsTable = props => <DocsTable {...props} Columns={Columns} />;
 
 /**
@@ -34,31 +38,48 @@ const DefaultDocsTable = props => <DocsTable {...props} Columns={Columns} />;
 const createDocsProxy = ({
   Docs = DefaultDocsTable,
   docsProperty = '__docgenInfo'
-} = {}) => class DocsProxy extends Component {
-  static propTypes = proxyPropTypes;
+} = {}) =>
+  class DocsProxy extends Component {
+    static propTypes = proxyPropTypes;
 
-  render() {
-    const { nextProxy: { value: NextProxy, next },
-      fixture: { component: { [docsProperty]: docs } } } = this.props;
+    render() {
+      const {
+        nextProxy: { value: NextProxy, next },
+        fixture: { component }
+      } = this.props;
 
-    return <div data-testid="docs-proxy">
-      {docs ? this.renderDocs() : null}
-      <div data-testid="component-panel">
-        <NextProxy {...this.props} nextProxy={next()} />
-      </div>
-    </div>;
-  }
+      if (component[docsProperty]) {
+        const { [docsProperty]: docs } = component;
 
-  renderDocs() {
-    // TODO: move this to a separate component
-    const { fixture: { component: { [docsProperty]: docs } } } = this.props;
+        return (
+          <div data-testid="docs-proxy">
+            {docs ? this.renderDocs() : null}
+            <div data-testid="component-panel">
+              <NextProxy {...this.props} nextProxy={next()} />
+            </div>
+          </div>
+        );
+      }
 
-    return <div data-testid="docs-panel">
-      <Header cache={headerCache}>
-        <Docs {...docs} />
-      </Header>
-    </div>;
-  }
-};
+      return <NextProxy {...this.props} nextProxy={next()} />;
+    }
+
+    renderDocs() {
+      // TODO: move this to a separate component
+      const {
+        fixture: {
+          component: { [docsProperty]: docs }
+        }
+      } = this.props;
+
+      return (
+        <div data-testid="docs-panel">
+          <Header cache={headerCache}>
+            <Docs {...docs} />
+          </Header>
+        </div>
+      );
+    }
+  };
 
 export default createDocsProxy;
