@@ -62,7 +62,7 @@ module.exports =
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "2f3f5ac0e03e429399ce"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "217bfad9b56e1cfe90f4"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -1962,19 +1962,26 @@ var createDocsProxy = function createDocsProxy() {
             _props$nextProxy = _props.nextProxy,
             NextProxy = _props$nextProxy.value,
             next = _props$nextProxy.next,
-            docs = _props.fixture.component[docsProperty];
+            component = _props.fixture.component;
 
 
-        return _react2.default.createElement(
-          'div',
-          { 'data-testid': 'docs-proxy' },
-          docs ? this.renderDocs() : null,
-          _react2.default.createElement(
+        if (component[docsProperty]) {
+          var docs = component[docsProperty];
+
+
+          return _react2.default.createElement(
             'div',
-            { 'data-testid': 'component-panel' },
-            _react2.default.createElement(NextProxy, _extends({}, this.props, { nextProxy: next() }))
-          )
-        );
+            { 'data-testid': 'docs-proxy' },
+            docs ? this.renderDocs() : null,
+            _react2.default.createElement(
+              'div',
+              { 'data-testid': 'component-panel' },
+              _react2.default.createElement(NextProxy, _extends({}, this.props, { nextProxy: next() }))
+            )
+          );
+        }
+
+        return _react2.default.createElement(NextProxy, _extends({}, this.props, { nextProxy: next() }));
       }
     }, {
       key: 'renderDocs',
